@@ -1,0 +1,1467 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Microsoft YaHei:300,300italic,400,400italic,700,700italic|Georgia:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|consolas:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Cloud Foundry,部署,Paas," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="一本正经的小马" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon1.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="一、Cloud Foundry 简介Cloud Foundry是VMware推出的业界第一个开源PaaS云平台，它支持多种框架、语言、运行时环境、云平台及应用服务，使开发人员能够在几秒钟内进行应用程序的部署和扩展，无需担心任何基础架构的问题。同时，它本身是一个基于Ruby on Rails的由多个相对独立的子系统通过消息机制组成的分布式系统，使平台在各层级都可水平扩展，既能在大型数据中心里运行，也">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloud Foundry 部署应用的过程及问题">
+<meta property="og:url" content="https://www.hanbert.cn/2016/06/11/Cloud-Foundry-部署应用的过程及问题/index.html">
+<meta property="og:site_name" content="一本正经的小马">
+<meta property="og:description" content="一、Cloud Foundry 简介Cloud Foundry是VMware推出的业界第一个开源PaaS云平台，它支持多种框架、语言、运行时环境、云平台及应用服务，使开发人员能够在几秒钟内进行应用程序的部署和扩展，无需担心任何基础架构的问题。同时，它本身是一个基于Ruby on Rails的由多个相对独立的子系统通过消息机制组成的分布式系统，使平台在各层级都可水平扩展，既能在大型数据中心里运行，也">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/2311911-2e035399182281f8.png">
+<meta property="og:updated_time" content="2017-04-10T02:47:38.392Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cloud Foundry 部署应用的过程及问题">
+<meta name="twitter:description" content="一、Cloud Foundry 简介Cloud Foundry是VMware推出的业界第一个开源PaaS云平台，它支持多种框架、语言、运行时环境、云平台及应用服务，使开发人员能够在几秒钟内进行应用程序的部署和扩展，无需担心任何基础架构的问题。同时，它本身是一个基于Ruby on Rails的由多个相对独立的子系统通过消息机制组成的分布式系统，使平台在各层级都可水平扩展，既能在大型数据中心里运行，也">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/2311911-2e035399182281f8.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.hanbert.cn/2016/06/11/Cloud-Foundry-部署应用的过程及问题/"/>
+
+
+
+
+
+  <title> Cloud Foundry 部署应用的过程及问题 | 一本正经的小马 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId=61405345";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一本正经的小马</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">假装不正经</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-essay">
+          <a href="/categories/随笔" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            随笔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-study">
+          <a href="/categories/学习" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-paper-plane"></i> <br />
+            
+            学习
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-other">
+          <a href="/categories/杂记" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-list"></i> <br />
+            
+            杂记
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://www.hanbert.cn/2016/06/11/Cloud-Foundry-部署应用的过程及问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小马">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar1.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一本正经的小马">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Cloud Foundry 部署应用的过程及问题
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-11T08:23:07+08:00">
+                2016-06-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/学习/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a class="cloud-tie-join-count" href="/2016/06/11/Cloud-Foundry-部署应用的过程及问题/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count join-count" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/06/11/Cloud-Foundry-部署应用的过程及问题/" class="leancloud_visitors" data-flag-title="Cloud Foundry 部署应用的过程及问题">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="一、Cloud-Foundry-简介"><a href="#一、Cloud-Foundry-简介" class="headerlink" title="一、Cloud Foundry 简介"></a>一、Cloud Foundry 简介</h3><p>Cloud Foundry是VMware推出的业界第一个开源PaaS云平台，它支持多种框架、语言、运行时环境、云平台及应用服务，使开发人员能够在几秒钟内进行应用程序的部署和扩展，无需担心任何基础架构的问题。同时，它本身是一个基于Ruby on Rails的由多个相对独立的子系统通过消息机制组成的分布式系统，使平台在各层级都可水平扩展，既能在大型数据中心里运行，也能运行在一台桌面电脑中，二者使用相同的代码库。</p>
+<p>作为新一代云应用平台，Cloud Foundry专为私有云计算环境、企业级数据中心和公有云服务提供商所打造。Cloud Foundry云平台可以简化现代应用程序的开发、交付和运行过程，在面对多种公有云和私有云选择、符合业界标准的高效开发框架以及应用基础设施服务时，可以显著提高开发者在云环境中部署和运行应用程序的能力。</p>
+<a id="more"></a>
+<h3 id="二、自定义buildpack包"><a href="#二、自定义buildpack包" class="headerlink" title="二、自定义buildpack包"></a>二、自定义buildpack包</h3><h4 id="§-Buildpack包的简介"><a href="#§-Buildpack包的简介" class="headerlink" title="§ Buildpack包的简介"></a>§ Buildpack包的简介</h4><p>CF默认集成的buildpack包：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Name</th>
+<th style="text-align:left">Supported Languages and Frameorks</th>
+<th style="text-align:left">GitHub Repo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Java</td>
+<td style="text-align:left">Grails, Play, Spring, or any other JVM-based language or framework</td>
+<td style="text-align:left"><a href="https://github.com/cloudfoundry/java-buildpack" target="_blank" rel="external">Java Source</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Ruby</td>
+<td style="text-align:left">JRuby, Rack, Rails, or Sinatra</td>
+<td style="text-align:left"><a href="https://github.com/cloudfoundry/ruby-buildpack" target="_blank" rel="external">Ruby source</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Node.js</td>
+<td style="text-align:left">Node or JavaScript</td>
+<td style="text-align:left"><a href="https://github.com/cloudfoundry/nodejs-buildpack" target="_blank" rel="external">Node.js source</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Binary</td>
+<td style="text-align:left">N/A</td>
+<td style="text-align:left"><a href="https://github.com/cloudfoundry/binary-buildpack" target="_blank" rel="external">Binary source</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Go</td>
+<td style="text-align:left">N/A</td>
+<td style="text-align:left"><a href="https://github.com/cloudfoundry/go-buildpack" target="_blank" rel="external">Go source</a></td>
+</tr>
+<tr>
+<td style="text-align:left">PHP</td>
+<td style="text-align:left">Cake, Symfony, Zend, Nginx, or HTTPD</td>
+<td style="text-align:left"><a href="https://github.com/cloudfoundry/php-buildpack" target="_blank" rel="external">PHP source</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Python</td>
+<td style="text-align:left">Django or Flask</td>
+<td style="text-align:left"><a href="https://github.com/cloudfoundry/python-buildpack" target="_blank" rel="external">Python source</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Staticfile</td>
+<td style="text-align:left">HTML, CSS, JavaScript, or Nginx</td>
+<td style="text-align:left"><a href="Staticfile source">Staticfile source</a></td>
+</tr>
+</tbody>
+</table>
+<p>这只是CF默认自带的几种，理论上，只要能做出buildpack包，任何语言都可以正常在CF上运行。</p>
+<blockquote>
+<p><strong>More Buildpacks：</strong></p>
+<ul>
+<li><a href="https://github.com/cloudfoundry-community/cf-docs-contrib/wiki/Buildpacks" target="_blank" rel="external">Cloud Foundry Community Buildpack</a></li>
+<li><a href="https://devcenter.heroku.com/articles/third-party-buildpacks" target="_blank" rel="external">Heroku Third-Party Buildpack</a></li>
+<li>Create your own buildpack: <a href="https://docs.cloudfoundry.org/buildpacks/custom.html" target="_blank" rel="external">Custom Buildpack</a></li>
+</ul>
+</blockquote>
+<p>一般buildpack包只包含的基础环境和简单的脚本设置，在使用的时候才会根据设置，从网上的源自己获取相应的 dependencies ，但大部分的源，国内访问都不是很方便，经常会出现无法下载相应的 dependencies 而导致 staging 失败。所以，国内想正常使用CF基本需要 offline 的 buildpack 包，而目前网络上提供的纯 offline 的 buildpack 比较少。</p>
+<blockquote>
+<p><strong>For more information about custom buildpacks:</strong></p>
+<ul>
+<li><a href="https://docs.cloudfoundry.org/buildpacks/custom.html" target="_blank" rel="external">Custom Buildpacks</a></li>
+<li><a href="https://docs.cloudfoundry.org/buildpacks/depend-pkg-offline.html" target="_blank" rel="external">Packaging Dependencies for Offline Buildpacks</a></li>
+<li><a href="https://docs.cloudfoundry.org/buildpacks/supported-binary-dependencies.html" target="_blank" rel="external">Supported Binary Dependencies</a></li>
+</ul>
+</blockquote>
+<p>就目前我们所能找到的 buildpack 包来看，都是用 Ruby 写的，所以，如果你想全新创建一个 buildpack 包，不仅要了解buildpack 的构成和逻辑，还需要懂 Ruby 编程知识。所以，目前大家首选的自定义方法是，在现有的 buildpack 包的基础之上，根据自己的实际需求进行修改，并离线所有的 dependencies 或者建立自己的本地源。</p>
+<p>另外，从 github 上下载 buildpack 包，基本不能直接使用，需要经过以下步骤处理：</p>
+<ul>
+<li>Make sure you have fetched submodules</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git submodule update --init</div></pre></td></tr></table></figure>
+<ul>
+<li>Get latest buildpack dependencies</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">BUNDLE_GEMFILE=cf.Gemfile bundle</div></pre></td></tr></table></figure>
+<ul>
+<li>Build the buildpack</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager [ --cached | --uncached ]</div></pre></td></tr></table></figure>
+<ul>
+<li>Use in Cloud Foundry</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cf create-buildpack CUSTOM_BUILDPACK_NAME CUSTOM_BUILDPACK_NAME.zip 1</div><div class="line">cf push my_app -b CUSTOM_BUILDPACK_NAME</div></pre></td></tr></table></figure>
+<ul>
+<li>Java buildpack 的编译和打包操作和以上有些不一样：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">bundle install</div><div class="line">bundle exec rake package OFFLINE=true PINNED=true</div><div class="line">...</div><div class="line">Creating build/java-buildpack-offline-cfd6b17.zip</div></pre></td></tr></table></figure>
+<blockquote>
+<p><strong><em>NOTE:</em></strong></p>
+<ul>
+<li>本地电脑上要事先安装 zip 工具</li>
+<li>本地电脑上要事先安装 Ruby 语言并配置好环境变量</li>
+<li>本地电脑上要事先安装 Bundler 工具</li>
+<li>事先学会 Bundler 的基本使用，参考 <em><a href="http://bundler.io/" target="_blank" rel="external">bundler.io</a></em></li>
+<li>由于 Bundler 的源是国外的，连接会不稳定，断开后，可以重新运行命令继续</li>
+</ul>
+</blockquote>
+<h4 id="§-基本原理"><a href="#§-基本原理" class="headerlink" title="§ 基本原理"></a>§ 基本原理</h4><p>CF运行应用的基本过程是将用户发布的应用程序包解压开，然后将自己的所有buildpack拿来，按照指定顺序与程序包进行匹配，直到找到第一个能够运行这些代码的buildpack，然后将buildpack也解开，与这些应用代码打成一个包（即droplet），在按照指定的运行环境参数生成容器，将droplet扔进去，按照buildpack指定的启动命令，启动应用。<br>在上面的过程中，buildpack做了三个动作：</p>
+<ul>
+<li><strong>detect:</strong> 检查当前应用程序包是否能够用本buildpack支持运行，比如，java buildpack发现WEB-INF路径就认为自己能够运行它。 </li>
+<li><strong>compile:</strong> 这是buildpack的核心文件，一般作用就是去拉取相应的Runtime（e.g. python2.7/ruby1.9.3）下来，做一下配置放到指定位置，拉取相应的Framework（e.g. Flask/Django）下来，做一下配置，放到指定位置。将应用程序包与buildpack包水乳交融一下，比如将java程序包放到tomcat的应用目录下，然后替换某些参数，比如将当前dea里的随机端口赋予这个tomcat实例。 </li>
+<li><strong>release:</strong> 将droplet启动，比如运行tomcat的startup.sh。 </li>
+</ul>
+<blockquote>
+<p>任何一个buildpack都有一个bin路径，放着三个指定名字（detect、compile、release）的脚本（任何dea的os能执行的脚本都可以），然后具体的实现逻辑就从这里触发了。</p>
+</blockquote>
+<h4 id="§-自定义-buildpack-包的样例"><a href="#§-自定义-buildpack-包的样例" class="headerlink" title="§ 自定义 buildpack 包的样例"></a>§ 自定义 buildpack 包的样例</h4><p> 下面我们自定义一个buildpack来支持java web项目。</p>
+<ul>
+<li><code>bin/detect</code>脚本文件 </li>
+</ul>
+<p><strong>A. bash 版</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/env bash </div><div class="line"># cf 会给detect脚本传入一个参数，即 build dir，里边就是那一坨app散文件</div><div class="line">BUILD_DIR=$1</div><div class="line"># 既然是java web的项目，而且跑在tomcat上，我们没别的要求，只要web.xml位于规范位置即可</div><div class="line">if [ -d &quot;$&#123;BUILD_DIR&#125;/WEB-INF&quot; ] &amp;&amp; [ -f &quot;$&#123;BUILD_DIR&#125;/WEB-INF/web.xml&quot; ]; then</div><div class="line"># 按照惯例，一般会把所侦测到的项目类型echo出来，</div><div class="line"># 这个echo出来的字符串和compile、release脚本没有半毛钱关系</div><div class="line">echo &quot;JavaWeb&quot;</div><div class="line"># 返回0表示detect成功执行，cf会继续执行compile，返回非0值cf就不继续往下走了</div><div class="line">exit 0</div><div class="line">fi</div><div class="line"></div><div class="line">echo &quot;no&quot;</div><div class="line">exit 1</div></pre></td></tr></table></figure>
+<p><strong>B. ruby 版</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/env ruby</div><div class="line"></div><div class="line">gemfile_path = File.join ARGV[0], &quot;Gemfile&quot;</div><div class="line"></div><div class="line">if File.exist?(gemfile_path)</div><div class="line">  puts &quot;Ruby&quot;</div><div class="line">  exit 0</div><div class="line">else</div><div class="line">  exit 1</div><div class="line">end</div></pre></td></tr></table></figure>
+<ul>
+<li><code>bin/compile</code> 脚本文件</li>
+</ul>
+<p>compile 文件做的事情稍微复杂一些，也是三个脚本文件中任务最重的一个。如果觉得 bash 脚本语言不能够很好的胜任，可以换用其他任何可以运行的脚本语言，比如 Ruby。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"># detect、compile、release这几个文件都没有后缀，用你喜欢的语言就好，这里是用的ruby</div><div class="line">$stdout.sync = true</div><div class="line"># 自己创建了一个lib目录，塞入环境变量，</div><div class="line"># 如之前所述，除了bin目录必须固定之外，其他文件（夹）随你喜欢来安排</div><div class="line">$:.unshift File.expand_path(&apos;../../lib&apos;, __FILE__)</div><div class="line">require &apos;global&apos;</div><div class="line">require &apos;main_pack&apos;</div><div class="line">require &apos;fileutils&apos;</div><div class="line"> </div><div class="line">build_path = ARGV[0]</div><div class="line">cache_path = ARGV[1]</div><div class="line">FileUtils.mkdir_p(build_path)</div><div class="line">FileUtils.mkdir_p(cache_path)</div><div class="line"># 主要逻辑都放在MainPack里了，无非就是下载、配置</div><div class="line">pack = MainPack.new(Global.new(build_path, cache_path))</div><div class="line">pack.compile</div></pre></td></tr></table></figure>
+<blockquote>
+<p><strong><em>NOTE:</em></strong></p>
+<ol>
+<li>为了提高下载速度，免受网络困扰，同时增加掌控力度，一般会把依赖的tar包放到内网某个位置去自己管理</li>
+<li><code>build_dir/.profile.d/*.sh</code>文件都会在运行app之前由 CloudFoundry 帮我们提前运行，那在此导出一些环境变量之类的就比较方便了</li>
+</ol>
+</blockquote>
+<ul>
+<li><code>bin/release</code> 脚本文件</li>
+</ul>
+<p>此处的 release 脚本文件同样是用ruby写的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/env ruby</div><div class="line"></div><div class="line">require &apos;yaml&apos;</div><div class="line"></div><div class="line">yml = &#123;</div><div class="line">&apos;addons&apos; =&gt; [],</div><div class="line">&apos;config_vars&apos; =&gt; &#123;&#125;,</div><div class="line">&apos;default_process_types&apos; =&gt; &#123;</div><div class="line">&apos;web&apos; =&gt; &apos;./bin/catalina.sh run&apos;</div><div class="line">&#125;</div><div class="line">&#125;.to_yaml</div><div class="line"></div><div class="line">puts yml</div></pre></td></tr></table></figure>
+<blockquote>
+<p><code>default_process_types</code>字段下面的web字段的值就是告诉CloudFoundry如何启动这个app，当然，我们可以在push应用的时候覆盖这个配置。</p>
+</blockquote>
+<p>buildpack 中提供的语言环境和 runtime（比如 php、apache），一般有多个版本可选，如果默认版本不符合用户需求，用户可以在自己程序的某个指定文件中配置自己所需要的版本，比如，用户程序中有个<code>config/dependency.yml</code>，如果用户提供了此文件，用用户指定的版本，如果用户没有提供，那就用 buildpack 默认的版本。</p>
+<p>CloudFoundry 有一个内部的仓储（里边是python、jdk、apache、php之类的buildpack需要的），版本管理由用户自己介入通过用户程序中的<code>config/dependency.yml</code>作为媒介，用户可以自由的做版本的管理。</p>
+<p>而有些不太好搞的依赖，比如某个python webapp要求系统事先安装flask1.0，推荐做法是，用户自己把flask打包到自己的程序中一起上传（这样用户发布出来的包就已经是没有依赖的)；也可以在根目录下提供一个<code>requirements.txt</code>，里边写上要安装的库，启动之前用<code>pip</code>来自动安装。如果有些依赖仍然搞不定，用户可以在启动脚本中写一些自定义命令。</p>
+<p>总体来看，buildpack 帮助 paas 平台完成了一个 app 在部署层面的抽象，主要搞定 app 依赖的 runtime 和 framework ，相当于搞定了静态依赖。操作系统特性通过统一定制 rootfs 来搞，不在 buildpack 问题域。配置文件差异问题，buildpack 认为一个app 一套配置，上层怎么处理，开发人员自己说了算，可以搭建多套 CloudFoundry 或者创建不同的 app：dev-app/prod-app之类；运行时依赖也需要开发人员自己搞定，提前确认好相应的依赖是否已经在 run，版本是否OK之类。</p>
+<h4 id="§-当前系统中的-Buildpack-版本"><a href="#§-当前系统中的-Buildpack-版本" class="headerlink" title="§ 当前系统中的 Buildpack 版本"></a>§ 当前系统中的 Buildpack 版本</h4><p>本次在尝试自定义 Buildpack 包的过程中，还对当前Cloud Foundry 系统中的Buildpack做了全面的更新。目前的已有的Buildpack的版本如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">buildpack              position   enabled   locked   filename</div><div class="line">staticfile_buildpack   1          true      false    staticfile_buildpack-cached-v1.3.10.zip</div><div class="line">ruby_buildpack         2          true      false    ruby_buildpack-cached-v1.6.20.zip</div><div class="line">nodejs_buildpack       3          true      false    nodejs_buildpack-cached-v1.5.18.zip</div><div class="line">go_buildpack           4          true      false    go_buildpack-cached-v1.7.11.zip</div><div class="line">python_buildpack       5          true      false    python_buildpack-cached-v1.5.8.zip</div><div class="line">php_buildpack          6          true      false    php_buildpack-cached-v4.3.17.zip</div><div class="line">binary_buildpack       7          true      false    binary_buildpack-cached-v1.0.3.zip</div><div class="line">java_buildpack         8          true      false    java-buildpack-offline-v3.8.1_4.zip</div></pre></td></tr></table></figure>
+<p>这是目前Pivotal官网所能提供的最新版。</p>
+<blockquote>
+<p><strong><em>NOTE:</em></strong><br>可以从<em><a href="https://network.pivotal.io" target="_blank" rel="external">network.pivotal.io</a></em>下载 Pivotal 相关的产品。<br>由于Pivotal官网服务器不在国内，所以，下载东西如果100MB+需要有点耐心，可能出现频繁下载失败的情况。<br>这个时候，只需要反复下载，尽量选择晚上下载，网速能好一点。<br>比如下图下载Python的Buildpack，反反复复下载了三天，侥幸成功!</p>
+<p><center><strong><em>有时候不努力一把你就不知道什么叫做绝望！</em></strong></center><br><img src="http://upload-images.jianshu.io/upload_images/2311911-2e035399182281f8.png" alt="1|center"></p>
+</blockquote>
+<h3 id="三、部署应用"><a href="#三、部署应用" class="headerlink" title="三、部署应用"></a>三、部署应用</h3><h4 id="§-Java-Buildpack-的使用"><a href="#§-Java-Buildpack-的使用" class="headerlink" title="§ Java Buildpack 的使用"></a>§ Java Buildpack 的使用</h4><p>Java Buildpack 可以用来部署 Grails, Play, Spring 或者其他任何基于JVM的语言或者框架。JVM类的应用程序，在CloudFoundry上部署之前需要事先在本地打包，所谓的打包，就是把用到的类工具、资源（图片等）、源码、编译后的文件等全都放到一起，以达到发布、管理、修改、维护方便的目的。</p>
+<blockquote>
+<p><strong>包的种类：</strong></p>
+<ul>
+<li>JAR包：打成JAR包的代码，一般作为工具类，在项目中，会应用到N多JAR工具包；</li>
+<li>WAR包：JAVA WEB工程，都是打成WAR包，进行发布，如果我们的服务器选择TOMCAT等轻量级服务器，一般就打出WAR包进行发布；</li>
+<li>EAR包：这针对企业级项目的，实际上EAR包中包含WAR包和几个企业级项目的配置文件而已，一般服务器选择WebSphere等，都会使用EAR包。</li>
+</ul>
+</blockquote>
+<p>对于不同的基于JVM的语言或者框架，其打包的方式略有不同。</p>
+<ul>
+<li><strong>Grails</strong></li>
+</ul>
+<p>Grails packages applications into WAR files for deployment into a Servlet container. To build the WAR file and deploy it, run the following:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ grails prod war</div><div class="line">$ cf push my-application; -p target/my-application-version.war</div></pre></td></tr></table></figure>
+<ul>
+<li><strong>Groovy</strong></li>
+</ul>
+<p>Groovy applications based on both <code>Ratpack</code> and a simple collection of files are supported.</p>
+<ul>
+<li><strong>Ratpack</strong></li>
+</ul>
+<p>Ratpack packages applications into two different styles; Cloud Foundry supports the <code>distZip</code> style. To build the ZIP and deploy it, run the following:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ gradle distZip</div><div class="line">$ cf push my-application -p build/distributions/my-application.zip</div></pre></td></tr></table></figure>
+<ul>
+<li><strong>Raw Groovy</strong></li>
+</ul>
+<p>Groovy applications that are made up of a <code>single entry point</code> plus any supporting files can be run without any other work. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cf push my-application</div></pre></td></tr></table></figure>
+<ul>
+<li><strong>Java Main</strong></li>
+</ul>
+<p>Java applications with a <code>main()</code>method can be run provided that they are packaged as <code>self-executable JARs</code>.</p>
+<blockquote>
+<p><strong><em>NOTE:</em></strong><br>If your application is not <code>web-enabled</code>, you must suppress route creation to avoid a <code>“failed to start accepting connections”</code>error. To suppress route creation, add <code>no-route: true</code> to the application <code>manifest.yml</code> or use the <code>--no-route</code> flag with the <code>cf push</code> command.</p>
+</blockquote>
+<ul>
+<li><strong>Maven</strong></li>
+</ul>
+<p>A Maven build can create a <code>self-executable JAR</code>. To build and deploy the JAR, run the following:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ mvn package</div><div class="line">$ cf push my-application -p target/my-application-version.jar</div></pre></td></tr></table></figure>
+<ul>
+<li><strong>Gradle</strong></li>
+</ul>
+<p>A Gradle build can create a self-executable JAR. To build and deploy the JAR, run the following:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ gradle build</div><div class="line">$ cf push my-application -p build/libs/my-application-version.jar</div></pre></td></tr></table></figure>
+<ul>
+<li><strong>Play Framework</strong></li>
+</ul>
+<p>The Play Framework packages applications into two different styles. Cloud Foundry supports both the <code>staged</code> and <code>dist</code> styles. To build the dist style and deploy it, run the following:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ play dist</div><div class="line">$ cf push my-application -p target/universal/my-application-version.zip</div></pre></td></tr></table></figure>
+<ul>
+<li><strong>Spring Boot CLI</strong></li>
+</ul>
+<p>Spring Boot can run applications comprised entirely of POGOs. To deploy then, run the following:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ spring grab *.groovy</div><div class="line">$ cf push my-application</div></pre></td></tr></table></figure>
+<ul>
+<li><strong>Servlet</strong></li>
+</ul>
+<p>Java applications can be packaged as Servlet applications.</p>
+<ul>
+<li><strong>Maven</strong></li>
+</ul>
+<p>A Maven build can create a Servlet WAR. To build and deploy the WAR, run the following:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ mvn package</div><div class="line">$ cf push my-application -p target/my-application-version.war</div></pre></td></tr></table></figure>
+<ul>
+<li><strong>Gradle</strong></li>
+</ul>
+<p>A Gradle build can create a Servlet WAR. To build and deploy the JAR, run the following:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ gradle build</div><div class="line">$ cf push my-application -p build/libs/my-application-version.war</div></pre></td></tr></table></figure>
+<blockquote>
+<p><strong><em>NOTE:</em></strong><br>在上面使用各种工具打包的过程中，经常会遇到，需要安装本地环境或各种工具。所以，如果遇到不能正常打包的情况，最好仔细看看它的错误提示，根据错误提示，看是本地环境问题，还是在线安装的时候，网络出了问题，如果是网络出了问题，能不能手动根据其下载地址，把工具或者依赖下下来，手动安装或者建立本地仓库，然后更新其配置文件中相应的下载链接等等。当然，由此带来的问题是，可能打包时间过长，耐心等待。<br>总而言之，这个过程基本上不会一帆风顺，需要比较强的Troubleshooting的能力。</p>
+</blockquote>
+<h4 id="§-Ruby-Buildpack-的使用"><a href="#§-Ruby-Buildpack-的使用" class="headerlink" title="§ Ruby  Buildpack 的使用"></a>§ Ruby  Buildpack 的使用</h4><p>Ruby Buildpack 包可以用来部署Rack, Rails, or Sinatra应用。</p>
+<p>在部署应用之前，首先要做的是，用<code>Bundler</code>工具在你的应用文件夹下面创建<code>Gemfile</code>和<code>Gemfile.lock</code>文件。</p>
+<p>Bundler的安装和使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ gem update --system</div><div class="line">$ gem install bundler</div><div class="line">$ bundle install</div><div class="line">$ git add Gemfile Gemfile.lock</div></pre></td></tr></table></figure>
+<p><strong>部署一个Ruby的应用：</strong></p>
+<blockquote>
+<p>Prerequisites</p>
+<ul>
+<li>A Ruby 2.x application that runs locally on your workstation</li>
+<li>Bundler configured on your workstation</li>
+<li>Basic to intermediate Ruby knowledge</li>
+<li>The cf Command Line Interface (CLI) installed on your workstation</li>
+</ul>
+</blockquote>
+<ul>
+<li>Clone the pong_matcher_ruby app from GitHub：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/cloudfoundry-samples/pong_matcher_ruby.git</div></pre></td></tr></table></figure>
+<blockquote>
+<p><strong><em>Note: </em></strong>Ensure that your Ruby app runs locally before continuing with this procedure.</p>
+</blockquote>
+<ul>
+<li>Create and Bind a Service Instance for a Ruby Application<br>Create a Service Instance</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># view services and plans that are available to you</div><div class="line">$ cf marketplace</div><div class="line">#cf create-service SERVICE PLAN SERVICE_INSTANCE</div><div class="line">$ cf create-service rediscloud 30mb redis</div><div class="line">Creating service redis in org Cloud-Apps / space development as clouduser@example.com....</div><div class="line">OK</div></pre></td></tr></table></figure>
+<p>Bind a Service Instance</p>
+<p>When you bind an app to a service instance, Cloud Foundry writes information about the service instance to the VCAP_SERVICES app environment variable. The app can use this information to integrate with the service instance.</p>
+<p>You can bind a service to an application with the command :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cf bind-service APPLICATION SERVICE_INSTANCE</div></pre></td></tr></table></figure>
+<p>Alternately, you can configure the deployment <code>manifest</code> file by adding a <code>services</code> block to the applications block and specifying the service instance. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">services:</div><div class="line">  - redis</div></pre></td></tr></table></figure>
+<ul>
+<li>Log in and Target the API Endpoint</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cf login -a API_ENDPOINT</div></pre></td></tr></table></figure>
+<ul>
+<li>Deploy an App</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cf push pong_matcher_ruby -n HOST_NAME</div></pre></td></tr></table></figure>
+<blockquote>
+<p>通过修改<code>manifest.yml</code> 文件，能够有效地控制部署应用的过程，包括instances、memory、command等 </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">applications:</div><div class="line">  - name: pong</div><div class="line">    memory: 256M</div><div class="line">    instances: 1</div><div class="line">    path: .</div><div class="line">    command: ruby server.rb</div><div class="line"></div><div class="line"># code_snippet ruby-2b start</div><div class="line">    services:</div><div class="line">      - redis</div><div class="line"># code_snippet ruby-2b end</div></pre></td></tr></table></figure>
+<h4 id="§-Node-js-Buildpack-的使用"><a href="#§-Node-js-Buildpack-的使用" class="headerlink" title="§ Node.js Buildpack 的使用"></a>§ Node.js Buildpack 的使用</h4><p>Cloud Foundry expects a <code>package.json</code> in your Node.js app. You can specify the version of Node.js you want to use in the <code>engine</code> node of your <code>package.json</code> file.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  &quot;name&quot;: &quot;first&quot;,</div><div class="line">  &quot;version&quot;: &quot;0.0.1&quot;,</div><div class="line">  &quot;author&quot;: &quot;Demo&quot;,</div><div class="line">  &quot;dependencies&quot;: &#123;</div><div class="line">    &quot;express&quot;: &quot;3.4.8&quot;,</div><div class="line">    &quot;consolidate&quot;: &quot;0.10.0&quot;,</div><div class="line">    &quot;express&quot;: &quot;3.4.8&quot;,</div><div class="line">    &quot;swig&quot;: &quot;1.3.2&quot;</div><div class="line">  &#125;,</div><div class="line">  &quot;engines&quot;: &#123;</div><div class="line">    &quot;node&quot;: &quot;0.12.7&quot;,</div><div class="line">    &quot;npm&quot;: &quot;2.7.4&quot;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>You must use the PORT environment variable to determine which port your app should listen on. In order to also run your app locally, you may want to make port 3000 the default:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">app.listen(process.env.PORT || 3000);</div></pre></td></tr></table></figure>
+<p>Node.js apps require a start command. You can specify the web start command for a Node.js app in a <code>Procfile</code> or in the app deployment <code>manifest</code>. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">applications:</div><div class="line">- name: my-app</div><div class="line">  command: node my-app.js //start command</div><div class="line">... the rest of your settings ...</div></pre></td></tr></table></figure>
+<p>Alternately, specify the start command with <code>cf push -c</code>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cf push my-app -c &quot;node my-app.js&quot;</div></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>Application Bundling</strong><br>You do not need to run <code>npm install</code> before deploying your app. Cloud Foundry runs it for you when your app is pushed. If you prefer to run <code>npm install</code> and create a <code>node_modules</code> folder inside of your app, this is also supported.</p>
+</blockquote>
+<h4 id="§-Binary-Buildpack-的使用"><a href="#§-Binary-Buildpack-的使用" class="headerlink" title="§ Binary Buildpack 的使用"></a>§ Binary Buildpack 的使用</h4><p>Binary Buildpack不想Cloud Foundry的其他Buildpack包，在使用的时候，必须指定Buildpack包。可以使用<code>cf push</code> 的 <code>- b</code>选项来指定相应的本地Buildpack的名字或者github的Buildpack包地址。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cf push my_app -b https://github.com/cloudfoundry/binary-buildpack.git</div></pre></td></tr></table></figure>
+<p>可以通过以下两种途径，执行binary文件：</p>
+<ul>
+<li><p><strong>Procfile:</strong> In the root directory of your app, add a <code>Procfile</code> that specifies a <code>web</code> task:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">web: ./app</div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Command line</strong>: Use <code>cf push APP-NAME</code> with the <code>- c</code> option:</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cf push my_app -c &apos;./app&apos; -b binary-buildpack</div></pre></td></tr></table></figure>
+<p><strong>Compiling your Binary</strong></p>
+<p>Your binary should run without any additional runtime dependencies on the <code>cflinuxfs2</code> or <code>lucid64 root filesystem (rootfs)</code>. Any such dependencies should be statically linked to the binary.</p>
+<p>To boot a docker container running the cflinuxfs2 filesystem, run the following command:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ docker run -it cloudfoundry/cflinuxfs2 bash</div></pre></td></tr></table></figure>
+<p>To boot a docker container running the lucid64 filesystem, run the following command:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ docker run -it cloudfoundry/lucid64 bash</div></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>需要提前安装docker，并配置好docker源</li>
+<li>下载比较缓慢，经常失败</li>
+</ul>
+</blockquote>
+<p>When deploying your binary to Cloud Foundry, use cf push with the -s option to specify the root filesystem it should run against.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cf push my_app -s (cflinuxfs2|lucid64)</div></pre></td></tr></table></figure>
+<h4 id="§-Go-Buildpack-的使用"><a href="#§-Go-Buildpack-的使用" class="headerlink" title="§ Go Buildpack 的使用"></a>§ Go Buildpack 的使用</h4><p>The Go buildpack will be automatically detected if:</p>
+<ul>
+<li>Your app has been packaged with <code>godep</code> using <code>godep save</code></li>
+<li>Your app has a <code>vendor/</code> directory and has any files ending with <code>.go</code>.</li>
+<li>Your app has a <code>GOPACKAGENAME</code> environment variable specified and has any files ending with <code>.go</code>.</li>
+<li>Your app has a <code>glide.yaml</code> file and is using <code>glide</code> (starting in buildpack version 1.7.9).</li>
+</ul>
+<p><strong>Pushing Apps with godep</strong></p>
+<p>If you are using <code>godep</code> to package your dependencies, make sure that you have created a valid <code>Godeps/Godeps.json</code> file in the root directory of your app by running godep save.</p>
+<p>When using godep, you can fix your <code>Go version</code> in GoVersion key of the <code>Godeps/Godeps.json</code> file.</p>
+<p>Go 1.5<br>An example <code>Godeps/Godeps.json</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    &quot;ImportPath&quot;: &quot;go_app&quot;,</div><div class="line">    &quot;GoVersion&quot;: &quot;go1.5&quot;,</div><div class="line">    &quot;Deps&quot;: []</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>An example <code>manifest.yml</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">applications:</div><div class="line">  - name: my-app-name</div></pre></td></tr></table></figure>
+<p>Go 1.6</p>
+<blockquote>
+<p><strong><em>NOTE:</em></strong> if you are using godep with Go 1.6, you must set the <code>GO15VENDOREXPERIMENT</code> environment variable to 0, otherwise your app will not stage.</p>
+</blockquote>
+<p>An example <code>Godeps/Godeps.json</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    &quot;ImportPath&quot;: &quot;go_app&quot;,</div><div class="line">    &quot;GoVersion&quot;: &quot;go1.6&quot;,</div><div class="line">    &quot;Deps&quot;: []</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>An example <code>manifest.yml</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">applications:</div><div class="line">  - name: my-app-name</div><div class="line">    env:</div><div class="line">      GO15VENDOREXPERIMENT: 0</div></pre></td></tr></table></figure>
+<p><strong>Pushing Apps with Glide</strong></p>
+<p>If you are using <code>glide</code> to specify and/or package your dependencies, make sure that you have created a valid <code>glide.yaml</code> file in the root directory of your app by running <code>glide init</code>.</p>
+<p>To vendor your dependencies before pushing, run <code>glide install</code>. This will generate a <code>vendor</code> directory and a <code>glide.lock</code>file specifying the latest compatible versions of your dependencies. A <code>glide.lock</code> is not required when deploying a non-vendored app. A <code>glide.lock</code> is required when pushing a vendored app.</p>
+<p>An example <code>glide.yaml</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">package: go_app_with_glide</div><div class="line">import:</div><div class="line">- package: github.com/ZiCog/shiny-thing</div><div class="line">  subpackages:</div><div class="line">  - foo</div></pre></td></tr></table></figure>
+<p><strong>Pushing Apps with Native Go Vendoring</strong></p>
+<p>If you are using the native Go vendoring system, which packages all local dependencies in the <code>vendor/</code>directory, you must specify your app’s package name in the <code>GOPACKAGENAME</code> environment variable. An example <code>manifest.yml</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">applications:</div><div class="line">  - name: my-app-name</div><div class="line">    command: go-online</div><div class="line">    env:</div><div class="line">      GOPACKAGENAME: go-online</div></pre></td></tr></table></figure>
+<p>Go 1.5</p>
+<blockquote>
+<p><strong><em>NOTE:</em></strong> For Go 1.5, since native vendoring is turned off by default, you must set the environment variable <code>GO15VENDOREXPERIMENT</code> to <code>1</code> in your <code>manifest.yml</code> to use this feature.</p>
+</blockquote>
+<p>If you are using the <code>vendor/</code> directory for dependencies, you can set the Go version with the <code>GOVERSION</code> environment variable.</p>
+<p>An example <code>manifest.yml</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">applications:</div><div class="line">  - name: my-app-name</div><div class="line">    env:</div><div class="line">      GOVERSION: go1.5</div><div class="line">      GOPACKAGENAME: app-package-name</div><div class="line">      GO15VENDOREXPERIMENT: 1</div></pre></td></tr></table></figure>
+<p>Go 1.6</p>
+<p>An example <code>manifest.yml</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">applications:</div><div class="line"> - name: my-app-name</div><div class="line">   command: example-project</div><div class="line">   env:</div><div class="line">     GOVERSION: go1.6</div><div class="line">     GOPACKAGENAME: github.com/example-org/example-project</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div></div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/jok.png" alt="小马 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Cloud-Foundry/" rel="tag"># Cloud Foundry</a>
+          
+            <a href="/tags/部署/" rel="tag"># 部署</a>
+          
+            <a href="/tags/Paas/" rel="tag"># Paas</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/10/通过rvm安装Ruby、Bundler和Rails/" rel="next" title="通过rvm安装Ruby、Bundler和Rails">
+                <i class="fa fa-chevron-left"></i> 通过rvm安装Ruby、Bundler和Rails
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/10/Hadoop-2-7-3-高可用（HA）集群部署/" rel="prev" title="Hadoop 2.7.3 高可用（HA）集群部署">
+                Hadoop 2.7.3 高可用（HA）集群部署 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar1.jpg"
+               alt="小马" />
+          <p class="site-author-name" itemprop="name">小马</p>
+           
+              <p class="site-description motion-element" itemprop="description">假装不正经</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/hanbert" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/BertHan" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、Cloud-Foundry-简介"><span class="nav-number">1.</span> <span class="nav-text">一、Cloud Foundry 简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、自定义buildpack包"><span class="nav-number">2.</span> <span class="nav-text">二、自定义buildpack包</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#§-Buildpack包的简介"><span class="nav-number">2.1.</span> <span class="nav-text">§ Buildpack包的简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#§-基本原理"><span class="nav-number">2.2.</span> <span class="nav-text">§ 基本原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#§-自定义-buildpack-包的样例"><span class="nav-number">2.3.</span> <span class="nav-text">§ 自定义 buildpack 包的样例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#§-当前系统中的-Buildpack-版本"><span class="nav-number">2.4.</span> <span class="nav-text">§ 当前系统中的 Buildpack 版本</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、部署应用"><span class="nav-number">3.</span> <span class="nav-text">三、部署应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#§-Java-Buildpack-的使用"><span class="nav-number">3.1.</span> <span class="nav-text">§ Java Buildpack 的使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#§-Ruby-Buildpack-的使用"><span class="nav-number">3.2.</span> <span class="nav-text">§ Ruby  Buildpack 的使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#§-Node-js-Buildpack-的使用"><span class="nav-number">3.3.</span> <span class="nav-text">§ Node.js Buildpack 的使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#§-Binary-Buildpack-的使用"><span class="nav-number">3.4.</span> <span class="nav-text">§ Binary Buildpack 的使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#§-Go-Buildpack-的使用"><span class="nav-number">3.5.</span> <span class="nav-text">§ Go Buildpack 的使用</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小马</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://www.hanbert.cn"> </a> 小马专属
+</div>
+
+<div class="theme-info">
+  博客 -
+  <a class="theme-link" href="https://www.hanbert.cn">
+    记录我的生活
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+    
+    <script>
+      var cloudTieConfig = {
+        url: document.location.href, 
+        sourceId: "",
+        productKey: "a112af18c95445c591096a909c4fb62c",
+        target: "cloud-tie-wrapper"
+      };
+    </script>
+    <script src="https://img1.ws.126.net/f2e/tie/yun/sdk/loader.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("PON7x61Hu1UYOgywYUN55ig8-gzGzoHsz", "1bzugjkBEuXCThr7Cro7lz6l");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+  <!-- 背景动画 -->
+  <div id="particles-js"></div>
+  <script type="text/javascript" src="/js/src/particle.js"></script>
+  <!-- <script src="js/app.js"></script> -->
+  
+</body>
+</html>
