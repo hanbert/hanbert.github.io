@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.hanbert.cn/"/>
-  <updated>2017-04-10T01:06:14.745Z</updated>
+  <updated>2017-05-24T11:19:16.340Z</updated>
   <id>https://www.hanbert.cn/</id>
   
   <author>
@@ -14,6 +14,64 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>修改Sahara源码后的部署问题</title>
+    <link href="https://www.hanbert.cn/2017/05/24/%E4%BF%AE%E6%94%B9Sahara%E6%BA%90%E7%A0%81%E5%90%8E%E7%9A%84%E9%83%A8%E7%BD%B2%E9%97%AE%E9%A2%98/"/>
+    <id>https://www.hanbert.cn/2017/05/24/修改Sahara源码后的部署问题/</id>
+    <published>2017-05-24T11:16:43.000Z</published>
+    <updated>2017-05-24T11:19:16.340Z</updated>
+    
+    <content type="html"><![CDATA[<p>此处以增加名为 <code>sandbox</code> 的plugin为例，进行开发环境和生产环境两种环境部署的介绍。</p>
+<a id="more"></a>
+<h3 id="部署到Devstack开发环境上"><a href="#部署到Devstack开发环境上" class="headerlink" title="部署到Devstack开发环境上"></a>部署到Devstack开发环境上</h3><p>由于Devstack采用的源码安装的方式，所以我们只需要将我们自己写的源码复制到Devstack用到的源码的相应位置，替换原来的代码，然后做一些配置，重启相应的服务后既可以正常测试使用我们自己写的源码，但要注意copy过程中的源码文件的权限问题，最好能与其他的plugin保持一致。</p>
+<p>需要修改以下几个地方：</p>
+<p><strong>① 修改Sahara的配置文件<code>sahara.conf</code>：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/sahara/sahara.conf</div></pre></td></tr></table></figure></p>
+<p>将<code>[DEFAULT]</code>下面<code>plugins</code>配置项后面添加<code>sandbox</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[DEFAULT]</div><div class="line">.......</div><div class="line">use_syslog = False</div><div class="line">use_neutron = true</div><div class="line">plugins = sandbox,hdp,cdh,mapr,spark,storm,fake</div><div class="line">debug = True</div><div class="line">verbose = True</div><div class="line">rpc_backend = rabbit</div></pre></td></tr></table></figure></p>
+<p><strong>② 修改sahara源码包的根目录下的<code>setup.cfg</code>文件：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim ./sahara/setup.cfg</div></pre></td></tr></table></figure>
+<p>在<code>[entry_points]</code>下的<code>sahara.cluster.plugins</code>下面添加一行新增加的plugin的主类名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">sahara.cluster.plugins =</div><div class="line">    vanilla = sahara.plugins.vanilla.plugin:VanillaProvider</div><div class="line">    ambari = sahara.plugins.ambari.plugin:AmbariPluginProvider</div><div class="line">    mapr = sahara.plugins.mapr.plugin:MapRPlugin</div><div class="line">    cdh = sahara.plugins.cdh.plugin:CDHPluginProvider</div><div class="line">    fake = sahara.plugins.fake.plugin:FakePluginProvider</div><div class="line">    spark = sahara.plugins.spark.plugin:SparkProvider</div><div class="line">    storm = sahara.plugins.storm.plugin:StormProvider</div><div class="line">	sandbox = sahara.plugins.sandbox.plugin:VanillaProvider</div></pre></td></tr></table></figure>
+<p><strong>③ 修改<code>/sahara/sahara.egg-info/</code>目录下<code>entry_points.txt</code>文件：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim ./sahara/sahara.egg-info/entry_points.txt</div></pre></td></tr></table></figure>
+<p>在<code>[sahara.cluster.plugins]</code>下面增加一行plugin的主类名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[sahara.cluster.plugins]</div><div class="line">ambari = sahara.plugins.ambari.plugin:AmbariPluginProvider</div><div class="line">cdh = sahara.plugins.cdh.plugin:CDHPluginProvider</div><div class="line">fake = sahara.plugins.fake.plugin:FakePluginProvider</div><div class="line">mapr = sahara.plugins.mapr.plugin:MapRPlugin</div><div class="line">spark = sahara.plugins.spark.plugin:SparkProvider</div><div class="line">storm = sahara.plugins.storm.plugin:StormProvider</div><div class="line">vanilla = sahara.plugins.vanilla.plugin:VanillaProvider</div></pre></td></tr></table></figure>
+<p><strong>④ 修改<code>sahara/devstack</code>目录下面的<code>settings</code>文件：</strong></p>
+<p>这一步主要是为了在Devstack重新部署的时候，能够使新生成的<code>sahara.conf</code>文件能自动包含新增的plugin的配置信息，否则会导致sahara的服务不能正常启动。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim ./sahara/devstack/settings</div></pre></td></tr></table></figure>
+<p>在<code>SAHARA_ENABLED_PLUGINS</code>下面添加<code>sandbox</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">SAHARA_ENABLED_PLUGINS=$&#123;SAHARA_ENABLED_PLUGINS:-\</div><div class="line">sandbox,vanilla,cdh,mapr,spark,storm,fake&#125;</div></pre></td></tr></table></figure>
+<p><strong>⑤ 重启<code>sahara-api</code>和<code>sahara-eng</code>两个服务：</strong></p>
+<p>centos：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl restart openstack-sahara-api</div><div class="line">systemctl restart openstack-sahara-engine</div></pre></td></tr></table></figure>
+<p>ubuntu:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">service sahara-api restart</div><div class="line">service sahara-engine restart</div></pre></td></tr></table></figure>
+<p>至此可以正常测试使用！</p>
+<h3 id="部署到生产环境上"><a href="#部署到生产环境上" class="headerlink" title="部署到生产环境上"></a>部署到生产环境上</h3><p>生产环境和开发环境相比，区别在于，你不能够直接指定源码包的位置，在生产环境下，由于采用的是直接包安装的方式，而非源码安装的方式，所以修改部分设置的时候不太一样，但好在python是一个解释型的语言，不需要事先编译好再部署。</p>
+<p><strong>① 将我们自己写的plugin相关的code拷贝到<code>/usr/lib/python2.7/site-packages/sahara/plugins</code>目录下，注意文件权限的问题：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># cp -r [SOURCE_CODE] /usr/lib/python2.7/site-packages/sahara/plugins/</div></pre></td></tr></table></figure>
+<p><strong>② 修改Sahara的配置文件<code>sahara.conf</code>：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /etc/sahara/sahara.conf</div></pre></td></tr></table></figure></p>
+<p>将<code>[DEFAULT]</code>下面<code>plugins</code>配置项后面添加<code>sandbox</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[DEFAULT]</div><div class="line">.......</div><div class="line">use_syslog = False</div><div class="line">use_neutron = true</div><div class="line">plugins = sandbox,vanilla, hdp,cdh,mapr,spark,storm,fake</div><div class="line">debug = True</div><div class="line">verbose = True</div><div class="line">rpc_backend = rabbit</div></pre></td></tr></table></figure></p>
+<p><strong>③ 修改<code>/usr/lib/python2.7/site-packages/sahara-XXX-py2.7.egg-info</code>目录下的<code>entry_points.txt</code>文件：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim /usr/lib/python2.7/site-packages/sahara-XXX-py2.7.egg-info/entry_points.txt</div></pre></td></tr></table></figure>
+<p>在<code>[sahara.cluster.plugins]</code>下面增加一行plugin的主类名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[sahara.cluster.plugins]</div><div class="line">ambari = sahara.plugins.ambari.plugin:AmbariPluginProvider</div><div class="line">cdh = sahara.plugins.cdh.plugin:CDHPluginProvider</div><div class="line">fake = sahara.plugins.fake.plugin:FakePluginProvider</div><div class="line">mapr = sahara.plugins.mapr.plugin:MapRPlugin</div><div class="line">spark = sahara.plugins.spark.plugin:SparkProvider</div><div class="line">storm = sahara.plugins.storm.plugin:StormProvider</div><div class="line">vanilla = sahara.plugins.vanilla.plugin:VanillaProvider</div></pre></td></tr></table></figure>
+<p><strong>④ 重启<code>sahara-api</code>和<code>sahara-eng</code>两个服务：</strong></p>
+<p>centos：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl restart openstack-sahara-api</div><div class="line">systemctl restart openstack-sahara-engine</div></pre></td></tr></table></figure>
+<p>ubuntu:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">service sahara-api restart</div><div class="line">service sahara-engine restart</div></pre></td></tr></table></figure>
+<p>至此可以正常测试使用！</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;此处以增加名为 &lt;code&gt;sandbox&lt;/code&gt; 的plugin为例，进行开发环境和生产环境两种环境部署的介绍。&lt;/p&gt;
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Kolla部署工具简介</title>
@@ -440,11 +498,11 @@
       <category term="学习" scheme="https://www.hanbert.cn/categories/%E5%AD%A6%E4%B9%A0/"/>
     
     
+      <category term="HBase" scheme="https://www.hanbert.cn/tags/HBase/"/>
+    
       <category term="Hadoop" scheme="https://www.hanbert.cn/tags/Hadoop/"/>
     
       <category term="高可用" scheme="https://www.hanbert.cn/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/"/>
-    
-      <category term="HBase" scheme="https://www.hanbert.cn/tags/HBase/"/>
     
   </entry>
   
