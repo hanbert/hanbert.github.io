@@ -113,7 +113,7 @@
 <meta property="og:url" content="https://www.hanbert.cn/2017/05/24/修改Sahara源码后的部署问题/index.html">
 <meta property="og:site_name" content="一本正经的小马">
 <meta property="og:description" content="此处以增加名为 sandbox 的plugin为例，进行开发环境和生产环境两种环境部署的介绍。">
-<meta property="og:updated_time" content="2017-05-24T11:19:16.340Z">
+<meta property="og:updated_time" content="2017-05-24T11:21:59.052Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="修改Sahara源码后的部署问题">
 <meta name="twitter:description" content="此处以增加名为 sandbox 的plugin为例，进行开发环境和生产环境两种环境部署的介绍。">
@@ -434,7 +434,7 @@
 <p><strong>② 修改sahara源码包的根目录下的<code>setup.cfg</code>文件：</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim ./sahara/setup.cfg</div></pre></td></tr></table></figure>
 <p>在<code>[entry_points]</code>下的<code>sahara.cluster.plugins</code>下面添加一行新增加的plugin的主类名：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">sahara.cluster.plugins =</div><div class="line">    vanilla = sahara.plugins.vanilla.plugin:VanillaProvider</div><div class="line">    ambari = sahara.plugins.ambari.plugin:AmbariPluginProvider</div><div class="line">    mapr = sahara.plugins.mapr.plugin:MapRPlugin</div><div class="line">    cdh = sahara.plugins.cdh.plugin:CDHPluginProvider</div><div class="line">    fake = sahara.plugins.fake.plugin:FakePluginProvider</div><div class="line">    spark = sahara.plugins.spark.plugin:SparkProvider</div><div class="line">    storm = sahara.plugins.storm.plugin:StormProvider</div><div class="line">	sandbox = sahara.plugins.sandbox.plugin:VanillaProvider</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">sahara.cluster.plugins =</div><div class="line">    vanilla = sahara.plugins.vanilla.plugin:VanillaProvider</div><div class="line">    ambari = sahara.plugins.ambari.plugin:AmbariPluginProvider</div><div class="line">    mapr = sahara.plugins.mapr.plugin:MapRPlugin</div><div class="line">    cdh = sahara.plugins.cdh.plugin:CDHPluginProvider</div><div class="line">    fake = sahara.plugins.fake.plugin:FakePluginProvider</div><div class="line">    spark = sahara.plugins.spark.plugin:SparkProvider</div><div class="line">    storm = sahara.plugins.storm.plugin:StormProvider</div><div class="line">    sandbox = sahara.plugins.sandbox.plugin:VanillaProvider</div></pre></td></tr></table></figure>
 <p><strong>③ 修改<code>/sahara/sahara.egg-info/</code>目录下<code>entry_points.txt</code>文件：</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim ./sahara/sahara.egg-info/entry_points.txt</div></pre></td></tr></table></figure>
 <p>在<code>[sahara.cluster.plugins]</code>下面增加一行plugin的主类名：</p>

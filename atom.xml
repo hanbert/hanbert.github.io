@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.hanbert.cn/"/>
-  <updated>2017-05-24T11:19:16.340Z</updated>
+  <updated>2017-05-24T11:21:59.052Z</updated>
   <id>https://www.hanbert.cn/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://www.hanbert.cn/2017/05/24/%E4%BF%AE%E6%94%B9Sahara%E6%BA%90%E7%A0%81%E5%90%8E%E7%9A%84%E9%83%A8%E7%BD%B2%E9%97%AE%E9%A2%98/"/>
     <id>https://www.hanbert.cn/2017/05/24/修改Sahara源码后的部署问题/</id>
     <published>2017-05-24T11:16:43.000Z</published>
-    <updated>2017-05-24T11:19:16.340Z</updated>
+    <updated>2017-05-24T11:21:59.052Z</updated>
     
     <content type="html"><![CDATA[<p>此处以增加名为 <code>sandbox</code> 的plugin为例，进行开发环境和生产环境两种环境部署的介绍。</p>
 <a id="more"></a>
@@ -31,7 +31,7 @@
 <p><strong>② 修改sahara源码包的根目录下的<code>setup.cfg</code>文件：</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim ./sahara/setup.cfg</div></pre></td></tr></table></figure>
 <p>在<code>[entry_points]</code>下的<code>sahara.cluster.plugins</code>下面添加一行新增加的plugin的主类名：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">sahara.cluster.plugins =</div><div class="line">    vanilla = sahara.plugins.vanilla.plugin:VanillaProvider</div><div class="line">    ambari = sahara.plugins.ambari.plugin:AmbariPluginProvider</div><div class="line">    mapr = sahara.plugins.mapr.plugin:MapRPlugin</div><div class="line">    cdh = sahara.plugins.cdh.plugin:CDHPluginProvider</div><div class="line">    fake = sahara.plugins.fake.plugin:FakePluginProvider</div><div class="line">    spark = sahara.plugins.spark.plugin:SparkProvider</div><div class="line">    storm = sahara.plugins.storm.plugin:StormProvider</div><div class="line">	sandbox = sahara.plugins.sandbox.plugin:VanillaProvider</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">sahara.cluster.plugins =</div><div class="line">    vanilla = sahara.plugins.vanilla.plugin:VanillaProvider</div><div class="line">    ambari = sahara.plugins.ambari.plugin:AmbariPluginProvider</div><div class="line">    mapr = sahara.plugins.mapr.plugin:MapRPlugin</div><div class="line">    cdh = sahara.plugins.cdh.plugin:CDHPluginProvider</div><div class="line">    fake = sahara.plugins.fake.plugin:FakePluginProvider</div><div class="line">    spark = sahara.plugins.spark.plugin:SparkProvider</div><div class="line">    storm = sahara.plugins.storm.plugin:StormProvider</div><div class="line">    sandbox = sahara.plugins.sandbox.plugin:VanillaProvider</div></pre></td></tr></table></figure>
 <p><strong>③ 修改<code>/sahara/sahara.egg-info/</code>目录下<code>entry_points.txt</code>文件：</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># vim ./sahara/sahara.egg-info/entry_points.txt</div></pre></td></tr></table></figure>
 <p>在<code>[sahara.cluster.plugins]</code>下面增加一行plugin的主类名：</p>
@@ -395,9 +395,9 @@
       <category term="学习" scheme="https://www.hanbert.cn/categories/%E5%AD%A6%E4%B9%A0/"/>
     
     
-      <category term="Devstack" scheme="https://www.hanbert.cn/tags/Devstack/"/>
-    
       <category term="Openstack" scheme="https://www.hanbert.cn/tags/Openstack/"/>
+    
+      <category term="Devstack" scheme="https://www.hanbert.cn/tags/Devstack/"/>
     
       <category term="开发环境" scheme="https://www.hanbert.cn/tags/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/"/>
     
