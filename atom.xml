@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.hanbert.cn/"/>
-  <updated>2017-10-02T18:11:28.269Z</updated>
+  <updated>2017-10-02T18:14:08.432Z</updated>
   <id>https://www.hanbert.cn/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://www.hanbert.cn/2017/10/03/Kolla%E5%A4%9A%E8%8A%82%E7%82%B9%E7%89%A9%E7%90%86%E6%9C%BA%E9%83%A8%E7%BD%B2OpenStack/"/>
     <id>https://www.hanbert.cn/2017/10/03/Kolla多节点物理机部署OpenStack/</id>
     <published>2017-10-02T17:42:57.000Z</published>
-    <updated>2017-10-02T18:11:28.269Z</updated>
+    <updated>2017-10-02T18:14:08.432Z</updated>
     
     <content type="html"><![CDATA[<p>2014年下半年，OpenStack基金会已经意识到Docker对OpenStack可能造成的威胁，研究OpenStack和Docker如何并存迫在眉睫，在2015年的温哥华峰会上，推出了3个项目：</p>
 <ul>
