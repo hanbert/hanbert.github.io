@@ -89,7 +89,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Openstack,Devstack,开发环境," />
+  <meta name="keywords" content="Devstack,Openstack,开发环境," />
 
 
 
@@ -108,13 +108,15 @@
 
 
 <meta name="description" content="Devstack 是面向 Openstack 开发者的快速自动化部署 Bash 脚本，提供了辅助开发和调试的源码环境，能够支持 All-In-One 和多节点部署模式，同时也支持 Plug-in 模式。Devstack 的使用可以说贯穿整个 Openstack 开发生涯，熟练的使用 Devstack 能有效提高开发效率。">
+<meta name="keywords" content="Devstack,Openstack,开发环境">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Devstack部署Openstack开发环境">
 <meta property="og:url" content="https://www.hanbert.cn/2017/04/09/Devstack部署Openstack开发环境/index.html">
 <meta property="og:site_name" content="一本正经的小马">
 <meta property="og:description" content="Devstack 是面向 Openstack 开发者的快速自动化部署 Bash 脚本，提供了辅助开发和调试的源码环境，能够支持 All-In-One 和多节点部署模式，同时也支持 Plug-in 模式。Devstack 的使用可以说贯穿整个 Openstack 开发生涯，熟练的使用 Devstack 能有效提高开发效率。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20170114134811369?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvSm1pbGs=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-04-09T12:25:15.476Z">
+<meta property="og:updated_time" content="2017-10-02T17:47:28.682Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Devstack部署Openstack开发环境">
 <meta name="twitter:description" content="Devstack 是面向 Openstack 开发者的快速自动化部署 Bash 脚本，提供了辅助开发和调试的源码环境，能够支持 All-In-One 和多节点部署模式，同时也支持 Plug-in 模式。Devstack 的使用可以说贯穿整个 Openstack 开发生涯，熟练的使用 Devstack 能有效提高开发效率。">
@@ -605,7 +607,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install python-pip</div><div class="line">sudo pip install --upgrade pip</div><div class="line">sudo pip install -U os-testr -i https://pypi.douban.com/simple</div></pre></td></tr></table></figure>
 <p><br><br><strong>长时间卡在运行<code>setup.py</code>程序</strong></p>
 <p>如果运行过程中，出现长时间卡在这一步的情况，基本可以手动<code>Ctrl-C</code>停掉部署过程，然后向上翻输出的部署过程，找到如下内容：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo -H http_proxy= https_proxy= no_proxy= PIP_FIND_LINKS= SETUPTOOLS_SYS_PATH_TECHNIQUE=rewrite /usr/<span class="built_in">local</span>/bin/pip2.7 install -c /opt/stack/requirements/upper-constraints.txt <span class="_">-e</span> /opt/stack/keystone</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo -H http_proxy= https_proxy= no_proxy= PIP_FIND_LINKS= SETUPTOOLS_SYS_PATH_TECHNIQUE=rewrite /usr/<span class="built_in">local</span>/bin/pip2.7 install -c /opt/stack/requirements/upper-constraints.txt -e /opt/stack/keystone</div></pre></td></tr></table></figure>
 <p>复制这段文字，然后手动运行这段命令，运行过程中如果出现安装源的问题，就用上面的<code>-i https://pypi.douban.com/simple</code>来制定安装源，如果能正常下载安装，就让它继续安装就可以，另外，此过程中如果出现某一个软件包安装时间过程也可以按一下<code>Crtl-C</code>，会自动重新安装这个软件包。</p>
 <p><strong>Python虚拟环境搭建与使用</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ pip install virtualenv <span class="comment">#安装virtualenv工具</span></div><div class="line">$ virtualenv venvName <span class="comment"># 创建名为venvName的虚拟环境</span></div><div class="line">$ <span class="built_in">source</span> venvName/bin/activate <span class="comment"># 进入虚拟环境</span></div></pre></td></tr></table></figure>
@@ -677,9 +679,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Openstack/" rel="tag"># Openstack</a>
-          
             <a href="/tags/Devstack/" rel="tag"># Devstack</a>
+          
+            <a href="/tags/Openstack/" rel="tag"># Openstack</a>
           
             <a href="/tags/开发环境/" rel="tag"># 开发环境</a>
           
@@ -780,7 +782,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -802,7 +804,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
