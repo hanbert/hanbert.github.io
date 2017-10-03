@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.hanbert.cn/"/>
-  <updated>2017-10-03T05:20:23.843Z</updated>
+  <updated>2017-10-03T05:59:04.143Z</updated>
   <id>https://www.hanbert.cn/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://www.hanbert.cn/2017/10/03/Kolla%E7%9B%B8%E5%85%B3%E9%9B%B6%E9%9B%B6%E7%A2%8E%E7%A2%8E/"/>
     <id>https://www.hanbert.cn/2017/10/03/Kolla相关零零碎碎/</id>
     <published>2017-10-03T05:19:18.000Z</published>
-    <updated>2017-10-03T05:20:23.843Z</updated>
+    <updated>2017-10-03T05:59:04.143Z</updated>
     
     <content type="html"><![CDATA[<p>本部分主要介绍一些Kolla使用过程中总结的经验和技巧等零碎知识，不成体系，也会附带一部分Sahara Plugin在由Kolla部署OpenStack环境下，如何增加和生效。</p>
 <a id="more"></a>
@@ -78,6 +78,27 @@
 <p>上述过程做完后，登陆<code>Dashboard</code>，找到<code>Data processing</code>下的<code>Plugin</code>,即可以看到已经生效。</p>
 <blockquote>
 <p><strong><em>Note:</em></strong><br>如果存在多个<code>controller</code>节点，需要每个<code>controller</code>节点都做修改！！！</p>
+</blockquote>
+<h4 id="通过Kolla工具进行Build镜像"><a href="#通过Kolla工具进行Build镜像" class="headerlink" title="通过Kolla工具进行Build镜像"></a>通过Kolla工具进行Build镜像</h4><p>此处的Kolla不同于上面的Kolla，上面的Kolla是指Kolla-ansible这个部署工具，这里的kolla 是个OpenStack的服务组件的Docker镜像构建工具，这点一定要分清。</p>
+<p>① 安装kolla，源码安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">git clone http://git.trystack.cn/openstack/kolla</div><div class="line">cd kolla</div><div class="line">//切换到O版的分支</div><div class="line">git checkout origin/stable/ocata</div><div class="line">pip install ./</div><div class="line">pip show kolla //查看kolla的版本</div></pre></td></tr></table></figure></p>
+<p>② 开始build镜像<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">kolla-build –b centos –t binary –p default</div></pre></td></tr></table></figure></p>
+<p>相关参数说明：</p>
+<ul>
+<li><strong>-b：</strong>指定build的镜像系统类型，<code>centos</code>或者<code>ubuntu</code></li>
+<li><strong>-t：</strong>制定安装类型，<code>binary</code>为二进制安装,<code>source</code>为源码安装</li>
+<li><strong>-p：</strong>指定build哪些镜像，默认：<code>chrony</code>,<code>cron</code>,<code>kolla-toolbox</code>,<code>glance</code>,<code>haproxy</code>,<code>heat</code>,<code>heka</code>,<code>horizon</code>,<code>keepalived</code>,<code>keystone</code>,<code>mariadb</code>,<code>memcached</code>,<code>neutron</code>,<code>nova</code>,<code>openvswitch</code>,<code>rabbitmq</code>；如果不指定<code>-p</code>可以单独指定build某个，如：<code>nova</code></li>
+</ul>
+<blockquote>
+<p><strong><em>Note:</em></strong><br>这个过程可能会因为网络问题导致build失败，可以重复几次。</p>
+</blockquote>
+<p>③ build完成后查看本地镜像，并打包保存：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">// 查看本地镜像</div><div class="line">docker images</div><div class="line"></div><div class="line">//镜像打包保存</div><div class="line">docker save lokolla/centos-binary-haproxy &gt;/opt/centos-binary-haproxy.tar</div></pre></td></tr></table></figure></p>
+<p>④ 在目标机器上启动一个<code>Registry</code>服务：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -d -p 4000:5000 --restart=always --name registry registry:2</div></pre></td></tr></table></figure></p>
+<p>⑤ 将打包好的本地镜像，先拷贝到目标机器上，<code>load</code>一下推送到<code>registry</code>中去：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">//导入到目标机器上</div><div class="line">docker load &lt; /opt/centos-binary-haproxy.tar</div><div class="line">//给单独的一个镜像打标签，以haproxy为例</div><div class="line">docker tag  7f5595d85f41 [SERVER_IP]:4000/test/centos-binary-haproxy:4.0.3</div><div class="line">//推送到本地registry中</div><div class="line">docker push [SERVER_IP]:4000/test/centos-binary-haproxy</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p><strong><em>Reference:</em></strong></p>
+<ul>
+<li>OpenStack实战分享：Kolla多节点部署加Ceph后端: <a href="http://www.99cloud.net/html/2017/jiuzhouyuanchuang_0317/302.html" target="_blank" rel="external">http://www.99cloud.net/html/2017/jiuzhouyuanchuang_0317/302.html</a></li>
+</ul>
 </blockquote>
 ]]></content>
     
