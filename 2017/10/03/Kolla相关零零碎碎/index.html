@@ -89,7 +89,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="数据库,数据仓库,概念," />
+  <meta name="keywords" content="Openstack,Kolla,安装部署," />
 
 
 
@@ -107,18 +107,18 @@
 
 
 
-<meta name="description" content="首先，定义三个概念：数据库软件、数据库、数据仓库。">
-<meta name="keywords" content="数据库,数据仓库,概念">
+<meta name="description" content="本部分主要介绍一些Kolla使用过程中总结的经验和技巧等零碎知识，不成体系，也会附带一部分Sahara Plugin在由Kolla部署OpenStack环境下，如何增加和生效。">
+<meta name="keywords" content="Openstack,Kolla,安装部署">
 <meta property="og:type" content="article">
-<meta property="og:title" content="数据库和数据仓库的区别">
-<meta property="og:url" content="https://www.hanbert.cn/2016/12/10/数据库和数据仓库的区别/index.html">
+<meta property="og:title" content="Kolla相关零零碎碎">
+<meta property="og:url" content="https://www.hanbert.cn/2017/10/03/Kolla相关零零碎碎/index.html">
 <meta property="og:site_name" content="一本正经的小马">
-<meta property="og:description" content="首先，定义三个概念：数据库软件、数据库、数据仓库。">
+<meta property="og:description" content="本部分主要介绍一些Kolla使用过程中总结的经验和技巧等零碎知识，不成体系，也会附带一部分Sahara Plugin在由Kolla部署OpenStack环境下，如何增加和生效。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-04-10T01:47:41.334Z">
+<meta property="og:updated_time" content="2017-10-03T05:20:23.843Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="数据库和数据仓库的区别">
-<meta name="twitter:description" content="首先，定义三个概念：数据库软件、数据库、数据仓库。">
+<meta name="twitter:title" content="Kolla相关零零碎碎">
+<meta name="twitter:description" content="本部分主要介绍一些Kolla使用过程中总结的经验和技巧等零碎知识，不成体系，也会附带一部分Sahara Plugin在由Kolla部署OpenStack环境下，如何增加和生效。">
 
 
 
@@ -146,13 +146,13 @@
 
 
 
-  <link rel="canonical" href="https://www.hanbert.cn/2016/12/10/数据库和数据仓库的区别/"/>
+  <link rel="canonical" href="https://www.hanbert.cn/2017/10/03/Kolla相关零零碎碎/"/>
 
 
 
 
 
-  <title> 数据库和数据仓库的区别 | 一本正经的小马 </title>
+  <title> Kolla相关零零碎碎 | 一本正经的小马 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -334,7 +334,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://www.hanbert.cn/2016/12/10/数据库和数据仓库的区别/">
+    <link itemprop="mainEntityOfPage" href="https://www.hanbert.cn/2017/10/03/Kolla相关零零碎碎/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="小马">
@@ -355,7 +355,7 @@
             
             
               
-                数据库和数据仓库的区别
+                Kolla相关零零碎碎
               
             
           </h1>
@@ -370,8 +370,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-10T09:08:40+08:00">
-                2016-12-10
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-03T13:19:18+08:00">
+                2017-10-03
               </time>
             
 
@@ -411,7 +411,7 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a class="cloud-tie-join-count" href="/2016/12/10/数据库和数据仓库的区别/#comments" itemprop="discussionUrl">
+                <a class="cloud-tie-join-count" href="/2017/10/03/Kolla相关零零碎碎/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count join-count" itemprop="commentCount"></span>
                 </a>
               </span>
@@ -420,7 +420,7 @@
 
           
           
-             <span id="/2016/12/10/数据库和数据仓库的区别/" class="leancloud_visitors" data-flag-title="数据库和数据仓库的区别">
+             <span id="/2017/10/03/Kolla相关零零碎碎/" class="leancloud_visitors" data-flag-title="Kolla相关零零碎碎">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -449,18 +449,63 @@
       
 
       
-        <p>首先，定义三个概念：数据库软件、数据库、数据仓库。</p>
+        <p>本部分主要介绍一些Kolla使用过程中总结的经验和技巧等零碎知识，不成体系，也会附带一部分Sahara Plugin在由Kolla部署OpenStack环境下，如何增加和生效。</p>
 <a id="more"></a>
-<h3 id="一、数据库软件"><a href="#一、数据库软件" class="headerlink" title="一、数据库软件"></a>一、数据库软件</h3><p>数据库软件：是一种软件，可以看得见，可以操作。用来实现数据库逻辑功能。属于物理层。</p>
-<h3 id="二、数据库"><a href="#二、数据库" class="headerlink" title="二、数据库"></a>二、数据库</h3><p>数据库：是一种逻辑概念，用来存放数据的仓库，主要是为了处理在线数据，通过数据库软件来实现。<br>数据库由很多表组成，表是二维的，一张表里可以有很多字段。字段一字排开，对应的数据就一行一行写入表中。数据库的美，在于能够用二维表现多维关系。<br>目前市面上流行的数据库都是二维数据库。如：Oracle、DB2、MySQL、Sybase、MS SQL Server等。</p>
-<h4 id="三、数据仓库"><a href="#三、数据仓库" class="headerlink" title="三、数据仓库"></a>三、数据仓库</h4><p>数据仓库：主要是为了处理历史数据。从逻辑上理解，数据库和数据仓库没有区别，都是通过数据库软件实现的存放数据的地方，只不过从数据量来说，数据仓库要比数据库更庞大得多。数据仓库主要用于数据挖掘和数据分析。</p>
-<h4 id="四、数据库与数据仓库的区别"><a href="#四、数据库与数据仓库的区别" class="headerlink" title="四、数据库与数据仓库的区别"></a>四、数据库与数据仓库的区别</h4><p>在IT的架构体系中，数据库是必须存在的。必须要有地方存放数据。比如现在的网购，淘宝，京东等等。物品的存货数量，货品的价格，用户的账户余额之类的。这些数据都是存放在后台数据库中。</p>
-<p>或者最简单理解，我们现在微博，QQ等账户的用户名和密码。在后台数据库必然有一张user表，字段起码有两个，即用户名和密码，然后我们的数据就一行一行的存在表上面。当我们登录的时候，我们填写了用户名和密码，这些数据就会被传回到后台去，去跟表上面的数据匹配，匹配成功了，你就能登录了。匹配不成功就会报错说密码错误或者没有此用户名等。这个就是数据库，数据库在生产环境就是用来干活的。凡是跟业务应用挂钩的，我们都使用数据库。</p>
-<p>而数据仓库则是BI下的其中一种技术。由于数据库是跟业务应用挂钩的，所以一个数据库不可能装下一家公司的所有数据。数据库的表设计往往是针对某一个应用进行设计的。比如刚才那个登录的功能，这张user表上就只有这两个字段，没有别的字段了。</p>
-<p>但是这张表符合应用，没有问题。但是这张表不符合分析。比如我想知道在哪个时间段，用户登录的量最多？哪个用户一年购物最多？诸如此类的指标。那就要重新设计数据库的表结构了。对于数据分析和数据挖掘，我们引入数据仓库概念。数据仓库的表结构是依照分析需求，分析维度，分析指标进行设计的。<br>数据仓库的数据来源于那些后台持续不停运作的数据库表。数据的搬运就牵涉到另一个技术叫ETL。这个过程就是数据从一个数据库到了数据仓库。</p>
-<p><strong>举个例子：</strong></p>
-<p>一家公司有5个分公司，月末要进行财务统计。那每家分公司都有自己的数据库可对自己分公司进行数据统计，可是，这5家分公司各自数据库的表结构设计都不同。可以理解为数据库中的表的数量不同，表中的字段也不同。如果要统计整个公司，那势必要制定统一标准。那就用到数据仓库，数据仓库作为一个新的汇总数据库，定义表的数量和字段内容。那各家分公司就要根据总公司的标准将自己数据库中的数据向总公司的字段安排靠拢。当然这个过程就交给ETL中的T来完成，transform转换。E是extract，L是load。抽取，导入。那这样，数据就被运送到数据仓库中了。统计学告诉我们，样本要足够多，得出的结论才能更准确，更具普遍性。这也就是要将各地的数据库数据汇总到一个数据仓库之中的原因。</p>
-<h4 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h4><p>数据仓库所用的数据库软件，听的比较多的是Teradata。用下来感觉Teradata也是很强悍的。数据仓库对于数据软件的要求是非常高的，对硬件要求也高，所以能够用得起数据仓库的公司都是有钱的主。Teradata是软件与硬件绑定的。也就是说TD公司会给你送来一个大机柜，里面是一台计算机服务器和存储设备。服务器中已经安装好数据库软件了。数据挖掘，数据统计映射到数据库软件这里的操作，就是排序和分组。对于海量数据库来说，排序是很可怕的事情。数据仓库每天将承受住大量的外来数据往库里插入，往数据库里插数据，也是很慢的。所以数据仓库的技术在于调优，架构不解决根本性问题。而普通生产数据，可以通过架构来调整，相对来说更注重HA，一般做数据库集群。</p>
+<h4 id="节点规划"><a href="#节点规划" class="headerlink" title="节点规划"></a>节点规划</h4><p>节点的规划和容器的分布由<code>inventory</code>控制，<code>/usr/share/kolla/ansible/inventory</code>目录下的<code>all-in-one</code>和<code>multinode</code>,如果单节点部署，需要指定<code>all-in-one</code>；如果是多节点部署，你需要指定<code>multinode</code>。尽量不要动<code>all-in-one</code>，但是如果采用多节点安装，则<code>multinode</code>应该根据自己的实际情况改写。</p>
+<h4 id="变量配置"><a href="#变量配置" class="headerlink" title="变量配置"></a>变量配置</h4><p>部署过程中用到的很多参数，大部分都写在<code>kolla-ansible/ansible/group_vars/all.yml</code>这个文件里面，有一部分写在<code>kolla-ansible/etc/kolla/globals.yml</code>中，两者有部分是重复的，<code>globals.yml</code>会覆盖<code>all.yml</code>的配置项。<br>这些变量的值，最终会替换<code>ansible</code>的<code>playbook</code>里面对应的变量的值，控制<code>playbook</code>的最终结果。这些<code>playbook</code>主要分为4类：</p>
+<ul>
+<li><strong>default</strong>：代表默认的一些配置</li>
+<li><strong>meta</strong>：代表依赖于哪个playbook</li>
+<li><strong>task</strong>：代表具体的部署任务</li>
+<li><strong>template</strong>：代表模板，主要包含容器的配置文件，以及容器启动时的一些初始化操作，主要是拷贝配置文件和启动该容器对应的服务。</li>
+</ul>
+<p>这些配置<code>playbook</code>全部放在<code>kolla-ansible/ansible/roles</code>对应的目录下。</p>
+<h4 id="部署前检测"><a href="#部署前检测" class="headerlink" title="部署前检测"></a>部署前检测</h4><p><code>kolla</code>提供了一个检测命令，可以对各个角色节点进行一些检测，主要是包括：</p>
+<ul>
+<li><strong>版本检测：</strong><code>docker-py</code>,<code>Ansible</code></li>
+<li><strong>端口检测：</strong>所有容器配置的监听端口是否已经被占用</li>
+<li><strong>服务检测：</strong>这里检测的就比较杂了，比如libvirt是否在运行，如果运行就会报错，比如Docker版本是否满足要求等等</li>
+</ul>
+<p>你可以查看<code>kolla-ansible/ansible/rolesprechecks/tasks</code>下面的playbook，知道所有的检测项。当检测出错时，你就需要根据出错的信息，对某些角色的节点进行些修改配置。 检测通过，下面的部署不一定成功，但检测没通过，下面的部署是肯定失败的。</p>
+<h4 id="部署完成后的清理"><a href="#部署完成后的清理" class="headerlink" title="部署完成后的清理"></a>部署完成后的清理</h4><p>在某些情况下，可能需要对环境中的容器，镜像，甚至节点上的所有关于kolla的配置，进行清理，可以使用<code>kolla-ansible destroy -i inventory/multinode</code>的子命令对环境清理。</p>
+<h4 id="部署完成后的扩展"><a href="#部署完成后的扩展" class="headerlink" title="部署完成后的扩展"></a>部署完成后的扩展</h4><p>kolla增加节点理论上很简单，只需要两步，一是修改对应的<code>inventory</code>，二是对待添加节点做好部署前的准备工作。</p>
+<h4 id="修改某个容器的配置"><a href="#修改某个容器的配置" class="headerlink" title="修改某个容器的配置"></a>修改某个容器的配置</h4><p>通过修改对应节点<code>/etc/kolla/</code>目录下对应的服务的配置文件，然后重启对应的容器，就可以修改相关配置。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker restart CONTAINER1 CONTAINER2 CONTAINER3 ......</div></pre></td></tr></table></figure></p>
+<p>如果是修改多个容器的配置，可以通过修改<code>kolla-ansible/ansible/roles</code>目录下对应的配置文件的模板，<code>/etc/kolla/globals.yml</code>下面的配置项，<code>kolla-ansible/ansible/group_vars/all.yml</code>里面的配置项，然后执行 <code>kolla-ansible reconfigure</code>命令即可。</p>
+<blockquote>
+<p><strong><em>Note:</em></strong><br>这种方式会将所有容器的配置重新覆盖一次，所有容器都会重启一次</p>
+</blockquote>
+<h4 id="修改代码"><a href="#修改代码" class="headerlink" title="修改代码"></a>修改代码</h4><p>使用<code>docker exec -it -u root CONTAINER_ID /bin/bash</code>命令以<code>root</code>用户的身份登录到相应的<code>container</code>中，然后直接修改里面的代码，如果需要修改配置文件，可以直接修改<code>/etc/kolla/</code>相应目录下的<code>.conf</code>文件，然后重启容器即可。</p>
+<p>如果需要复用这个修改后的容器，可以使用<code>docker commit</code>基于你改动的容器，重新制作一个镜像，指定一个合适的<code>tag</code>(即容器镜像的版本，不要和已有镜像的重复)，最后上传到本地镜像仓库中即可。 </p>
+<blockquote>
+<p><strong><em>Note：</em></strong><br>当移除旧的容器，如果简单的执行<code>docker run</code>的相关命令启动一个新的容器会出错，原因是启动容器时会做些初始化的操作，由于涉及到文件的拷贝，所以会出现缺少相关文件的报错。而启动容器以及容器的初始化的操作由<code>kolla_toolbox</code>（这是kolla在部署过程中，第二个启动的容器）执行，具体的由<code>kolla_toolbox</code>里的<code>/usr/local/bin/kolla_start</code>和 <code>/usr/local/bin/kolla_set_configs</code>来控制。</p>
+</blockquote>
+<h4 id="基于Dockerfile重新制作的镜像："><a href="#基于Dockerfile重新制作的镜像：" class="headerlink" title="基于Dockerfile重新制作的镜像："></a>基于Dockerfile重新制作的镜像：</h4><p>由于采用源码的方式安装相关的第三方库，我们可以在<code>git</code>上维护相关的所有代码，在我们提交新的<code>commit</code>的时候，通过拉取新的源码，重新用<code>Dockerfile</code>制作镜像。一般来说<code>Dockerfile</code>都不需要变化。 </p>
+<h4 id="部署完成后的环境的升级"><a href="#部署完成后的环境的升级" class="headerlink" title="部署完成后的环境的升级"></a>部署完成后的环境的升级</h4><p>可以通过修改<code>/etc/kolla/global.yml</code>里面<code>openstack-release</code>的参数，然后执行<code>kolla-ansible upgrade</code>的命令升级环境。理论上可以做到单个容器的升级，但是具体能不能实现，有待验证。</p>
+<p>如果需要回滚就只是将<code>/etc/kolla/global.yml</code>里面<code>openstack-release</code>的参数，改回原来的版本即可。</p>
+<h4 id="kolla网络相关参数"><a href="#kolla网络相关参数" class="headerlink" title="kolla网络相关参数"></a>kolla网络相关参数</h4><ul>
+<li><strong>network_interface：</strong>为下面几种<code>interface</code>提供默认值</li>
+<li><strong>api_interface: </strong>用于<code>management network</code>,即<code>openstack</code>内部服务间通信，以及服务于数据库通信的网络。这是系统的风险点，所以，这个网络推荐使用内网，不能够接出到外网，默认值为：<code>network_interface</code></li>
+<li><strong>kolla_external_vip_interface: </strong>这是一个公网网段，当你想要<code>HAProxy Public endpoint</code>暴漏在不同的网络中的时候，需要用到。当<code>kolla_enables_tls_external</code>设置为<code>yes</code>的时候，是个必选项。默认值为：<code>network_interface</code></li>
+<li><strong>storage_interface: </strong> 虚拟机与<code>Ceph</code>通信接口，这个接口负载较重，推荐放在<code>10Gig</code>网口上。默认值为：<code>network_interface</code></li>
+<li><strong>cluster_interface: </strong>这是<code>Ceph</code>用到的另外一个接口，用于数据的<code>replication</code>，这个接口同样负载很重，当其成为bottleneck的时候，会影响数据的一致性和整个集群的性能。默认：<code>network_interface</code></li>
+<li><strong>tunnel_interface: </strong>这个接口用于虚拟机与虚拟机之间的通信，通过 <code>tunneled</code>网路进行，比如：<code>Vxlan</code>，<code>GRE</code>等，默认为：<code>network_interface</code></li>
+<li><strong>neutron_external_interface: </strong>这是<code>Neutron</code>需要的接口，<code>Neutron</code>会将其绑定在<code>br-ex</code>上，既可以是<code>flat</code>网络，也可以是<code>tagged vlan</code>网络，必须单独设置</li>
+</ul>
+<h4 id="Docker的一些配置建议"><a href="#Docker的一些配置建议" class="headerlink" title="Docker的一些配置建议"></a>Docker的一些配置建议</h4><p><code>Docker</code>是<code>kolla</code>的核心依赖，配置好<code>Docker</code>能够有效改变<code>kolla</code>的使用体验，在某些版本中<code>Docker</code>的存储驱动默认是<code>devicemapper</code>，这个<code>driver</code>严重损害性能。我们推荐使用<code>btrfs</code>或者<code>aufs</code>作为驱动。</p>
+<p><code>kolla</code>将所有的永久数据存放在<code>Docker volumes</code>中，默认这个<code>volumes</code>在<code>docker</code>的工作目录下面创建，默认是：<code>/var/lib/docker</code>，建议确认这个目录具有足够的空间，否则会影响<code>Database</code>的<code>commits</code>和<code>rabbitmq</code>的性能<br>尤其当<code>enable_central_logging</code>和<code>openstack_logging_debug</code>设置为<code>true</code>的时候，更需要关注.</p>
+<h4 id="部署完成后的服务运行日志"><a href="#部署完成后的服务运行日志" class="headerlink" title="部署完成后的服务运行日志"></a>部署完成后的服务运行日志</h4><p>所有组件的日志都放在<code>/var/lib/docker/volumes/kolla_logs/_data/</code>对应的目录下。</p>
+<h4 id="替换Horizon的图标"><a href="#替换Horizon的图标" class="headerlink" title="替换Horizon的图标"></a>替换Horizon的图标</h4><p>提前将需要用到的文件凡在一台可以被<code>container</code> 通过<code>ssh</code>连接到的<code>host</code>的<code>/opt</code>目录下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">//登陆Horizon的container中</div><div class="line">docker exec -it -u root horizon /bin/bash</div><div class="line"></div><div class="line">//替换下面这个目录下的对应文件</div><div class="line">cd /var/lib/kolla/venv/lib/python2.7/site-packages/openstack_dashboard/static/dashboard/img</div><div class="line">scp root@[SERVER_IP]:/opt/logo-splash.svg ./</div><div class="line">scp root@[SERVER_IP]:/opt/logo.svg ./</div><div class="line">scp root@[SERVER_IP]:/opt/favicon.ico ./</div><div class="line"></div><div class="line">//替换下面这个目录下的对应文件</div><div class="line">cd /var/lib/kolla/venv/lib/python2.7/site-packages/static/dashboard/img</div><div class="line">scp root@[SERVER_IP]:/opt/logo-splash.svg ./</div><div class="line">scp root@[SERVER_IP]:/opt/logo.svg ./</div><div class="line">scp root@[SERVER_IP]:/opt/favicon.ico ./</div><div class="line"></div><div class="line">//退出登陆</div><div class="line">exit</div></pre></td></tr></table></figure></p>
+<p>以上过程做完后，无需重启容器，清空浏览器缓存，从新刷新<code>Dashboard</code>页面即可看到生效。</p>
+<blockquote>
+<p><strong><em>Note:</em></strong><br>如果存在多个<code>controller</code>节点，需要每个<code>controller</code>节点都做修改！！！</p>
+</blockquote>
+<h4 id="部署Sahara的Plugin代码"><a href="#部署Sahara的Plugin代码" class="headerlink" title="部署Sahara的Plugin代码"></a>部署Sahara的Plugin代码</h4><p>首先先将需要部署的<code>Plugin</code>代码放置到一台可以被<code>container</code> 通过<code>ssh</code>连接到的<code>host</code>的<code>/opt</code>目录下：</p>
+<p>① 修改<code>Sahara_engine</code>服务容器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">//登陆Sahara_engine容器</div><div class="line">docker exec -u root -it sahara_engine /bin/bash</div><div class="line"></div><div class="line">//拷贝Plugin代码</div><div class="line">cd /var/lib/kolla/venv/lib/python2.7/site-packages/sahara/plugins</div><div class="line">scp -r root@[SERVER_IP]:/opt/sandbox/ ./</div><div class="line"></div><div class="line">//修改 *.egg-info/entry_points.txt文件</div><div class="line">//在[sahara.cluster.plugins]选项下，添加“sandbox = sahara.plugins.sandbox.plugin:VanillaProvider”</div><div class="line">cd /var/lib/kolla/venv/lib/python2.7/site-packages/sahara-6.0.1-py2.7.egg-info</div><div class="line">vi entry_points.txt </div><div class="line"></div><div class="line">//退出容器</div><div class="line">exit</div><div class="line"></div><div class="line">//修改Sahara_engine的配置文件</div><div class="line">//在[DEFAULT]下，添加“plugins = sandbox,vanilla,spark,cdh,ambari,storm,mapr”</div><div class="line">docker restart sahara_engine</div><div class="line">cd /etc/kolla/sahara-engine</div><div class="line">vi sahara.conf</div><div class="line"></div><div class="line">//重启Sahara_engine容器</div><div class="line">docker restart sahara_engine</div></pre></td></tr></table></figure></p>
+<p>② 修改<code>Sahara_api</code>服务容器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">//登陆Sahara_api容器</div><div class="line">docker exec -u root -it sahara_api /bin/bash</div><div class="line"></div><div class="line">//拷贝Plugin代码</div><div class="line">cd /var/lib/kolla/venv/lib/python2.7/site-packages/sahara/plugins</div><div class="line">scp -r root@[SERVER_IP]:/opt/sandbox/ ./</div><div class="line"></div><div class="line">//修改 *.egg-info/entry_points.txt文件</div><div class="line">//在[sahara.cluster.plugins]选项下，添加“sandbox = sahara.plugins.sandbox.plugin:VanillaProvider”</div><div class="line">cd /var/lib/kolla/venv/lib/python2.7/site-packages/sahara-6.0.1-py2.7.egg-info</div><div class="line">vi entry_points.txt </div><div class="line"></div><div class="line">//退出容器</div><div class="line">exit</div><div class="line"></div><div class="line">//修改Sahara_api的配置文件</div><div class="line">//在[DEFAULT]下，添加“plugins = sandbox,vanilla,spark,cdh,ambari,storm,mapr”</div><div class="line">docker restart sahara_api</div><div class="line">cd /etc/kolla/sahara-api</div><div class="line">vi sahara.conf</div><div class="line"></div><div class="line">//重启Sahara_api容器</div><div class="line">docker restart sahara_api</div></pre></td></tr></table></figure></p>
+<p>上述过程做完后，登陆<code>Dashboard</code>，找到<code>Data processing</code>下的<code>Plugin</code>,即可以看到已经生效。</p>
+<blockquote>
+<p><strong><em>Note:</em></strong><br>如果存在多个<code>controller</code>节点，需要每个<code>controller</code>节点都做修改！！！</p>
+</blockquote>
 
       
     </div>
@@ -506,11 +551,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/数据库/" rel="tag"># 数据库</a>
+            <a href="/tags/Openstack/" rel="tag"># Openstack</a>
           
-            <a href="/tags/数据仓库/" rel="tag"># 数据仓库</a>
+            <a href="/tags/Kolla/" rel="tag"># Kolla</a>
           
-            <a href="/tags/概念/" rel="tag"># 概念</a>
+            <a href="/tags/安装部署/" rel="tag"># 安装部署</a>
           
         </div>
       
@@ -523,8 +568,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/10/11/HBase-高可用（HA）集群部署/" rel="next" title="HBase 高可用（HA）集群部署">
-                <i class="fa fa-chevron-left"></i> HBase 高可用（HA）集群部署
+              <a href="/2017/10/03/Kolla多节点物理机部署OpenStack/" rel="next" title="Kolla多节点物理机部署OpenStack">
+                <i class="fa fa-chevron-left"></i> Kolla多节点物理机部署OpenStack
               </a>
             
           </div>
@@ -532,10 +577,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/04/09/Devstack部署Openstack开发环境/" rel="prev" title="Devstack部署Openstack开发环境">
-                Devstack部署Openstack开发环境 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -693,7 +734,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、数据库软件"><span class="nav-number">1.</span> <span class="nav-text">一、数据库软件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、数据库"><span class="nav-number">2.</span> <span class="nav-text">二、数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#三、数据仓库"><span class="nav-number">2.1.</span> <span class="nav-text">三、数据仓库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、数据库与数据仓库的区别"><span class="nav-number">2.2.</span> <span class="nav-text">四、数据库与数据仓库的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、总结"><span class="nav-number">2.3.</span> <span class="nav-text">五、总结</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#节点规划"><span class="nav-number">1.</span> <span class="nav-text">节点规划</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#变量配置"><span class="nav-number">2.</span> <span class="nav-text">变量配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#部署前检测"><span class="nav-number">3.</span> <span class="nav-text">部署前检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#部署完成后的清理"><span class="nav-number">4.</span> <span class="nav-text">部署完成后的清理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#部署完成后的扩展"><span class="nav-number">5.</span> <span class="nav-text">部署完成后的扩展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改某个容器的配置"><span class="nav-number">6.</span> <span class="nav-text">修改某个容器的配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改代码"><span class="nav-number">7.</span> <span class="nav-text">修改代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基于Dockerfile重新制作的镜像："><span class="nav-number">8.</span> <span class="nav-text">基于Dockerfile重新制作的镜像：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#部署完成后的环境的升级"><span class="nav-number">9.</span> <span class="nav-text">部署完成后的环境的升级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#kolla网络相关参数"><span class="nav-number">10.</span> <span class="nav-text">kolla网络相关参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Docker的一些配置建议"><span class="nav-number">11.</span> <span class="nav-text">Docker的一些配置建议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#部署完成后的服务运行日志"><span class="nav-number">12.</span> <span class="nav-text">部署完成后的服务运行日志</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#替换Horizon的图标"><span class="nav-number">13.</span> <span class="nav-text">替换Horizon的图标</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#部署Sahara的Plugin代码"><span class="nav-number">14.</span> <span class="nav-text">部署Sahara的Plugin代码</span></a></li></ol></div>
             
 
           </div>
