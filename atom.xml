@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.hanbert.cn/"/>
-  <updated>2017-10-03T05:59:04.143Z</updated>
+  <updated>2017-10-13T04:48:22.478Z</updated>
   <id>https://www.hanbert.cn/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://www.hanbert.cn/2017/10/03/Kolla%E7%9B%B8%E5%85%B3%E9%9B%B6%E9%9B%B6%E7%A2%8E%E7%A2%8E/"/>
     <id>https://www.hanbert.cn/2017/10/03/Kolla相关零零碎碎/</id>
     <published>2017-10-03T05:19:18.000Z</published>
-    <updated>2017-10-03T05:59:04.143Z</updated>
+    <updated>2017-10-13T04:48:22.478Z</updated>
     
     <content type="html"><![CDATA[<p>本部分主要介绍一些Kolla使用过程中总结的经验和技巧等零碎知识，不成体系，也会附带一部分Sahara Plugin在由Kolla部署OpenStack环境下，如何增加和生效。</p>
 <a id="more"></a>
@@ -100,6 +100,14 @@
 <li>OpenStack实战分享：Kolla多节点部署加Ceph后端: <a href="http://www.99cloud.net/html/2017/jiuzhouyuanchuang_0317/302.html" target="_blank" rel="external">http://www.99cloud.net/html/2017/jiuzhouyuanchuang_0317/302.html</a></li>
 </ul>
 </blockquote>
+<h4 id="Docker更换国内镜像下载源"><a href="#Docker更换国内镜像下载源" class="headerlink" title="Docker更换国内镜像下载源"></a>Docker更换国内镜像下载源</h4><p>由于国内特殊的网络环境，往往我们从Docker Hub中拉取镜像并不能成功，而且速度特别慢。那么我们可以给Docker配置一个国内的registry mirror，当我们需要的镜像在mirror中则直接返回，如果没有则从Docker Hub中拉取。是否使用registry mirror对Docker用户来说是透明的。</p>
+<p>DaoCloud在国内提供了首个Docker Hub镜像服务，而且免费，大大提高了国内Docker用户的使用热情，非常感谢DaoCloud。</p>
+<p><strong>使用方法：</strong></p>
+<p>① 修改Docker配置文件<code>/etc/default/docker</code>，添加如下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DOCKER_OPTS=&quot;--registry-mirror=http://aad0405c.m.daocloud.io&quot;</div></pre></td></tr></table></figure>
+<p>② 重启Docker服务：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service docker restart</div></pre></td></tr></table></figure>
+<p>现在就可以直接从国内源pull镜像啦！</p>
 ]]></content>
     
     <summary type="html">
